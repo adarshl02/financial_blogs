@@ -1,6 +1,53 @@
-import React from 'react';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { app } from '../firebase';
+import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice';
+import CircularProgress from "@mui/material/CircularProgress";
+import { toast } from 'react-toastify';
 
-export default function Login({handleSignupOpen}) {
+export default function Login({ handleSignupOpen }) {
+  const [formData, setFormData] = useState({});
+  const [err, setErr] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.user);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    if (err) {
+      setErr("");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const auth = getAuth(app);
+    const { email, password } = formData;
+
+    if (email && password) {
+      dispatch(signInStart());
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        dispatch(signInSuccess({ email: user.email, uid: user.uid }));
+        toast.success("You're Successfully Logged In");
+        navigate('/');
+      } catch (error) {
+        dispatch(signInFailure(error.message));
+        setErr(error.message);
+      }
+    } else {
+      setErr('Please fill in all fields');
+    }
+  };
+
   return (
     <div className="flex items-center justify-center">
       <div className="bg-slate-50 text-slate-700 p-6 rounded-lg shadow-lg w-full max-w-lg">
@@ -8,18 +55,38 @@ export default function Login({handleSignupOpen}) {
         <p className="mb-4">Glad you're back!</p>
         <form>
           <div className="mb-4">
-            <label className="block text-gray-700">Username</label>
-            <input type="text" className="mt-1 w-full px-4 py-2  border-2 border-gray-400  rounded-lg  text-base focus:ring focus:ring-blue-400 focus:outline-none" placeholder="Username" />
+            <label className="block text-gray-700">Email</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 border-2 border-gray-400 rounded-lg text-base focus:ring focus:ring-blue-400 focus:outline-none"
+              placeholder="Email"
+              name='email'
+              onChange={handleChange}
+            />
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Password</label>
-            <input type="password" className="mt-1 w-full px-4 py-2  border-2 border-gray-400 rounded-lg  text-base focus:ring focus:ring-blue-400 focus:outline-none" placeholder="Password" />
+            <input
+              type="password"
+              className="mt-1 w-full px-4 py-2 border-2 border-gray-400 rounded-lg text-base focus:ring focus:ring-blue-400 focus:outline-none"
+              placeholder="Password"
+              name='password'
+              onChange={handleChange}
+            />
           </div>
+          {err && <p className='text-red-500 text-xs mb-1 max-w-full break-words'>{err}</p>}
           <div className="flex items-center mb-4">
-            <input type="checkbox" id="rememberMe" className="mr-2 " />
+            <input type="checkbox" id="rememberMe" className="mr-2" />
             <label htmlFor="rememberMe" className="text-gray-700">Remember me</label>
           </div>
-          <button type="submit" className="w-full bg-gradient-to-r from-purple-400 to-blue-500 text-white p-2 rounded shadow">Login</button>
+          <button
+            type='submit'
+            onClick={handleSubmit}
+            className="w-full bg-gradient-to-r from-purple-400 to-blue-500 text-white p-2 rounded shadow flex justify-center items-center"
+            disabled={loading} // Disable button when loading is true
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+          </button>
           <div className="text-right mt-2">
             <a href="#" className="text-blue-500">Forgot password?</a>
           </div>
@@ -30,21 +97,19 @@ export default function Login({handleSignupOpen}) {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
         <div className="mt-4 flex justify-center gap-4">
-          <button className="bg-white border border-gray-300  p-2 rounded-full flex items-center shadow">
-            <img src="./google.png" alt="Google" className="w-6 h-6 " />
-            
+          <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
+            <img src="./google.png" alt="Google" className="w-6 h-6" />
           </button>
           <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
             <img src="./facebook.png" alt="Facebook" className="w-6 h-6" />
-            
           </button>
           <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
             <img src="./github.png" alt="GitHub" className="w-6 h-6" />
           </button>
         </div>
-          <div className="mt-4 text-center">
+        <div className="mt-4 text-center">
           <button onClick={handleSignupOpen} className="text-blue-500">
-          Don't have an account? Signup
+            Don't have an account? Signup
           </button>
         </div>
         <div className="mt-4 flex justify-between text-sm text-gray-500 gap-6">
