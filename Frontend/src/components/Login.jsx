@@ -82,31 +82,13 @@ export default function Login({ handleSignupOpen }) {
           <button
             type='submit'
             onClick={handleSubmit}
-            className="w-full bg-gradient-to-r from-purple-400 to-blue-500 text-white p-2 rounded shadow flex justify-center items-center"
+            className="w-full bg-gradient-to-r from-purple-400 to-blue-500 text-white p-2 rounded shadow flex justify-center items-center hover:opacity-95"
             disabled={loading} // Disable button when loading is true
           >
             {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
           </button>
-          <div className="text-right mt-2">
-            <a href="#" className="text-blue-500">Forgot password?</a>
-          </div>
         </form>
-        <div className="mt-4 flex items-center">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-2 text-gray-500">Or</span>
-          <div className="flex-grow border-t border-gray-300"></div>
-        </div>
-        <div className="mt-4 flex justify-center gap-4">
-          <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
-            <img src="./google.png" alt="Google" className="w-6 h-6" />
-          </button>
-          <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
-            <img src="./facebook.png" alt="Facebook" className="w-6 h-6" />
-          </button>
-          <button className="bg-white border border-gray-300 p-2 rounded-full flex items-center shadow">
-            <img src="./github.png" alt="GitHub" className="w-6 h-6" />
-          </button>
-        </div>
+        
         <div className="mt-4 text-center">
           <button onClick={handleSignupOpen} className="text-blue-500">
             Don't have an account? Signup

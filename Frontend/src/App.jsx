@@ -16,15 +16,17 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/landing' element={<ProtectedRoute><Landing/></ProtectedRoute>}/>
+        <Route path='/landing' element={<ProtectedRoute> <Landing/></ProtectedRoute>}/>
 
         <Route element={<PrivateRoute />}>
+
         <Route path='/analytics' element={<Analytics/>}/>
         <Route path='/profile' element={<Profile/>}/>
         <Route path='/tipsandsuggestions' element={<TipsAndSuggestions/>}/>
         <Route path='/gullak' element={<Gullak/>}/>
         <Route path='/diary' element={<Diary/>}/>
         <Route path='/' element={<Test/>}/>
+
         </Route>
 
 
